@@ -9,12 +9,12 @@
         </div>
       </side-menu>
     </Sider>
-    <!--<Layout>
+    <Layout>
       <Header class="header-con">
         <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
-          <user :message-unread-count="unreadCount" :user-avator="userAvator"/>
-          <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-          <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
+          <!--<user :message-unread-count="unreadCount" :user-avator="userAvator"/>-->
+          <!--<language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>-->
+          <!--<error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>-->
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
         </header-bar>
       </Header>
@@ -31,20 +31,20 @@
           </Content>
         </Layout>
       </Content>
-    </Layout>-->
+    </Layout>
   </Layout>
 </template>
 <script>
   import SideMenu from './components/side-menu'
-  // import HeaderBar from './components/header-bar'
-  // import TagsNav from './components/tags-nav'
+  import HeaderBar from './components/header-bar'
+  import TagsNav from './components/tags-nav'
   // import User from './components/user'
-  // import ABackTop from './components/a-back-top'
-  // import Fullscreen from './components/fullscreen'
+  import ABackTop from './components/a-back-top'
+  import Fullscreen from './components/fullscreen'
   // import Language from './components/language'
   // import ErrorStore from './components/error-store'
   import { mapMutations } from 'vuex'
-  import { getNewTagList } from '@/common/util'
+  import { getNewTagList, routeEqual } from '@/common/util'
   import routers from '@/router/routers'
   import minLogo from '@/assets/images/logo-min.jpg'
   import maxLogo from '@/assets/images/logo.jpg'
@@ -52,15 +52,14 @@
   export default {
     name: 'Main',
     components: {
-      SideMenu
-      // ,
-      // HeaderBar,
+      SideMenu,
+      HeaderBar,
       // Language,
-      // TagsNav,
-      // Fullscreen,
+      TagsNav,
+      Fullscreen,
       // ErrorStore,
       // User,
-      // ABackTop
+      ABackTop
     },
     data () {
       return {
@@ -83,10 +82,10 @@
       // userAvator () {
       //   return this.$store.state.user.avatorImgPath
       // },
-      // cacheList () {
-      //   const list = ['ParentView', ...this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []]
-      //   return list
-      // },
+      cacheList () {
+        const list = ['ParentView', ...this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []]
+        return list
+      },
       menuList () {
         return this.$store.getters.menuList
       }
@@ -106,10 +105,9 @@
         'setBreadCrumb',
         'setTagNavList',
         'setHomeRoute',
-        'addTag'
-        // ,
+        'addTag',
         // 'setLocal',
-        // 'closeTag'
+        'closeTag'
       ]),
       // ...mapActions([
       //   'handleLogin',
@@ -132,26 +130,25 @@
           params,
           query
         })
+      },
+      handleCollapsedChange (state) {
+        this.collapsed = state
+      },
+      handleCloseTag (res, type, route) {
+        if (type !== 'others') {
+          if (type === 'all') {
+            this.turnToPage(this.$config.homeName)
+          } else {
+            if (routeEqual(this.$route, route)) {
+              this.closeTag(route)
+            }
+          }
+        }
+        this.setTagNavList(res)
+      },
+      handleClick (item) {
+        this.turnToPage(item)
       }
-      // ,
-      // handleCollapsedChange (state) {
-      //   this.collapsed = state
-      // },
-      // handleCloseTag (res, type, route) {
-      //   if (type !== 'others') {
-      //     if (type === 'all') {
-      //       this.turnToPage(this.$config.homeName)
-      //     } else {
-      //       if (routeEqual(this.$route, route)) {
-      //         this.closeTag(route)
-      //       }
-      //     }
-      //   }
-      //   this.setTagNavList(res)
-      // },
-      // handleClick (item) {
-      //   this.turnToPage(item)
-      // }
     },
     watch: {
       '$route' (newRoute) {

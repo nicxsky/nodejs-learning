@@ -4,27 +4,27 @@ import {
   getTagNavListFromLocalstorage,
   setTagNavListInLocalstorage,
   getHomeRoute,
-  // getNextRoute,
+  getNextRoute,
   routeHasExist,
-  // routeEqual,
+  routeEqual,
   getRouteTitleHandled
   // ,
   // localSave,
   // localRead
 } from '@/common/util'
 // import { saveErrorLogger } from '@/api/data'
-// import router from '@/router'
+import router from '@/router'
 import routers from '@/router/routers'
 import config from '@/config'
 const { homeName } = config
 
-// const closePage = (state, route) => {
-//   const nextRoute = getNextRoute(state.tagNavList, route)
-//   state.tagNavList = state.tagNavList.filter(item => {
-//     return !routeEqual(item, route)
-//   })
-//   router.push(nextRoute)
-// }
+const closePage = (state, route) => {
+  const nextRoute = getNextRoute(state.tagNavList, route)
+  state.tagNavList = state.tagNavList.filter(item => {
+    return !routeEqual(item, route)
+  })
+  router.push(nextRoute)
+}
 
 export default {
   state: {
@@ -61,12 +61,12 @@ export default {
       state.tagNavList = tagList
       setTagNavListInLocalstorage([...tagList])
     },
-    // closeTag (state, route) {
-    //   let tag = state.tagNavList.filter(item => routeEqual(item, route))
-    //   route = tag[0] ? tag[0] : null
-    //   if (!route) return
-    //   closePage(state, route)
-    // },
+    closeTag (state, route) {
+      let tag = state.tagNavList.filter(item => routeEqual(item, route))
+      route = tag[0] ? tag[0] : null
+      if (!route) return
+      closePage(state, route)
+    },
     addTag (state, { route, type = 'unshift' }) {
       let router = getRouteTitleHandled(route)
       if (!routeHasExist(state.tagNavList, router)) {

@@ -5,6 +5,12 @@ import iView from 'iview'
 
 Vue.use(Router)
 
+// 解决3.1.x之后NavigationDuplicated错误
+const originalPush = Router.prototype.push
+Router.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 const router = new Router({
   routes: routes
   // mode: 'history'

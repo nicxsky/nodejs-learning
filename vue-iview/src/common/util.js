@@ -183,3 +183,59 @@ export const routeEqual = (route1, route2) => {
   const query2 = route2.query || {}
   return (route1.name === route2.name) && objEqual(params1, params2) && objEqual(query1, query2)
 }
+
+/**
+ * @param {Array} list 标签列表
+ * @param {String} name 当前关闭的标签的name
+ */
+export const getNextRoute = (list, route) => {
+  let res = {}
+  if (list.length === 2) {
+    res = getHomeRoute(list)
+  } else {
+    const index = list.findIndex(item => routeEqual(item, route))
+    if (index === list.length - 1) res = list[list.length - 2]
+    else res = list[index + 1]
+  }
+  return res
+}
+
+// scrollTop animation
+export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = (
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function (callback) {
+        return window.setTimeout(callback, 1000 / 60)
+      }
+    )
+  }
+  const difference = Math.abs(from - to)
+  const step = Math.ceil(difference / duration * 50)
+
+  const scroll = (start, end, step) => {
+    if (start === end) {
+      endCallback && endCallback()
+      return
+    }
+
+    let d = (start + step > end) ? end : start + step
+    if (start > end) {
+      d = (start - step < end) ? end : start - step
+    }
+
+    if (el === window) {
+      window.scrollTo(d, d)
+    } else {
+      el.scrollTop = d
+    }
+    window.requestAnimationFrame(() => scroll(d, end, step))
+  }
+  scroll(from, to, step)
+}
+
+export const hasChild = (item) => {
+  return item.children && item.children.length !== 0
+}
